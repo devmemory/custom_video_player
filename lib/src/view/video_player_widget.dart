@@ -38,7 +38,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   /// indicator, 시간 갱신
   ValueNotifier<Duration>? _timelineNotifier;
 
-  ValueNotifier<bool>? _visibilityNotifier;
+  // ValueNotifier<bool>? _visibilityNotifier;
 
   late Size _size;
 
@@ -52,19 +52,19 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         widget.videoOption == VideoOption.bottomBarOnly) {
       _volumeNotifier = ValueNotifier(_controller.muteSound);
       _timelineNotifier = ValueNotifier(Duration.zero);
-      _visibilityNotifier = ValueNotifier(true);
+      // _visibilityNotifier = ValueNotifier(true);
     }
 
     // play/stop 토글
     if (widget.videoOption != VideoOption.none) {
       _playButtonNotifier = ValueNotifier(PlayerButtonState.stopped);
 
-      _controller.addListener(listener);
+      _controller.addListener(_listener);
     }
   }
 
   /// timeline slider, text 업데이트용
-  void listener() {
+  void _listener() {
     _timelineNotifier!.value = _controller.getVideoValue.position;
 
     if (!_controller.isLooping &&
@@ -77,7 +77,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   void dispose() {
-    _controller.removeListener(listener);
+    _controller.removeListener(_listener);
     _playButtonNotifier?.dispose();
     _volumeNotifier?.dispose();
     _timelineNotifier?.dispose();
@@ -233,8 +233,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
           ValueListenableBuilder<Duration>(
               valueListenable: _timelineNotifier!,
               builder: (_, duration, __) {
-                return SizedBox(
-                  height: 1,
+                return Transform.translate(
+                  offset: const Offset(0, 30),
                   child: SliderTheme(
                     data: SliderTheme.of(context).copyWith(trackHeight: 2),
                     child: Slider(
